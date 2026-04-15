@@ -1,0 +1,17 @@
+https://cdn.phototourl.com/free/2026-04-15-ba62b167-3802-4d8e-84dd-00aa5ea28179.jpg
+https://cdn.phototourl.com/free/2026-04-15-14947ae2-ac73-4716-aa60-98e7d44b23bd.jpg
+https://cdn.phototourl.com/free/2026-04-15-67756f27-6cbf-4758-accb-0b022e5f4484.jpg
+
+# Ошибка NULL в NOT NULL
+CREATE TABLE `group` (id INTEGER PRIMARY KEY, name VARCHAR(255), description VARCHAR(255) NOT NULL);
+INSERT INTO `group` VALUES (1, 'Тест', NULL);
+
+#Ошибка дублирования PK
+CREATE TABLE `group` (id INTEGER PRIMARY KEY, name VARCHAR(255), description VARCHAR(255));
+INSERT INTO `group` VALUES (1, 'А', 'описание');
+INSERT INTO `group` VALUES (1, 'Б', 'другое');
+
+#Ошибка внешнего ключа
+CREATE TABLE `group` (id INTEGER PRIMARY KEY, name VARCHAR(255), description VARCHAR(255));
+CREATE TABLE student (id INTEGER PRIMARY KEY, name VARCHAR(255), group_id INTEGER REFERENCES `group`(id));
+INSERT INTO student VALUES (1, 'Тест', 999);
