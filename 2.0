@@ -1,0 +1,109 @@
+#Лабораторная работа №2: Основы выборки SQL
+
+#Цель работы
+
+#Изучить основные операторы выборки данных SQL: сортировку (ORDER BY), группировку (GROUP BY), агрегатные функции, фильтрацию групп (HAVING) и объединение таблиц (JOIN).
+
+#1. Создание таблиц и наполнение данными
+
+CREATE TABLE worker (
+    worker_id INTEGER PRIMARY KEY,
+    shop_id INTEGER REFERENCES shop (id),
+    name VARCHAR(255),
+    salary INTEGER NOT NULL,
+    position VARCHAR(255)
+);
+
+#2. Проверка наполнения таблицы worker
+
+SELECT * FROM worker;
+
+#3. Примеры сортировки (ORDER BY)
+
+#3.1. Сортировка сотрудников по зарплате (от большей к меньшей)
+
+SELECT * FROM worker
+ORDER BY salary DESC;
+
+#3.2. Сортировка товаров по цене (от дешёвых к дорогим)
+
+SELECT * FROM product
+ORDER BY price ASC;
+
+#3.3. Сортировка сотрудников сначала по должности, затем по зарплате (убывание)
+
+SELECT * FROM worker
+ORDER BY position ASC, salary DESC;
+
+#4. Примеры группировки и агрегатных функций
+
+#4.1. Количество сотрудников на каждой должности
+
+SELECT position, COUNT(*) AS count_workers
+FROM worker
+GROUP BY position
+ORDER BY count_workers DESC;
+
+#4.2. Суммарная зарплата по каждому магазину
+
+SELECT shop_id, SUM(salary) AS total_salary
+FROM worker
+GROUP BY shop_id
+ORDER BY total_salary DESC;
+
+#4.3. Минимальная и максимальная зарплата по должностям
+
+SELECT position,
+       MIN(salary) AS min_salary,
+       MAX(salary) AS max_salary
+FROM worker
+GROUP BY position;
+
+#4.4. Средняя зарплата по должностям
+
+SELECT position, AVG(salary) AS avg_salary
+FROM worker
+GROUP BY position
+ORDER BY avg_salary DESC;
+
+#4.5. Общее количество товаров на складе по магазинам
+
+SELECT shop_id, SUM(quantity) AS total_items
+FROM warehouse
+GROUP BY shop_id
+ORDER BY total_items DESC;
+
+#5. Запросы с использованием JOIN
+
+#5.1. Список сотрудников с названием магазина, должностью и зарплатой (сортировка по названию магазина и убыванию зарплаты)
+
+SELECT
+    worker.name      AS employee_name,
+    shop.name        AS shop_name,
+    worker.position  AS position,
+    worker.salary    AS salary
+FROM worker
+JOIN shop ON worker.shop_id = shop.id
+ORDER BY shop.name ASC, worker.salary DESC;
+
+#5.2. Для каждого магазина: название, количество сотрудников, средняя зарплата (сортировка по средней зарплате по убыванию)
+
+SELECT
+    shop.name                   AS shop_name,
+    COUNT(worker.worker_id)     AS employee_count,
+    AVG(worker.salary)          AS avg_salary
+FROM worker
+JOIN shop ON worker.shop_id = shop.id
+GROUP BY shop.name
+ORDER BY avg_salary DESC;
+
+#5.3. Магазины, где средняя зарплата сотрудников выше 50 000 (название и средняя зарплата)
+
+SELECT
+    shop.name          AS shop_name,
+    AVG(worker.salary) AS avg_salary
+FROM worker
+JOIN shop ON worker.shop_id = shop.id
+GROUP BY shop.name
+HAVING AVG(worker.salary) > 50000
+ORDER BY avg_salary DESC;
