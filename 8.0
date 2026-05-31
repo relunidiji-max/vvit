@@ -1,0 +1,152 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+# 1. Загрузка данных
+df = pd.read_csv("titanic.csv")
+
+print("Первые строки таблицы:")
+print(df.head())
+
+print("\nИнформация о таблице:")
+print(df.info())
+
+print("\nОсновные статистические показатели:")
+print(df.describe())
+
+numeric_columns = df.select_dtypes(include=[np.number]).columns.tolist()
+categorical_columns = df.select_dtypes(exclude=[np.number]).columns.tolist()
+
+print("\nЧисловые признаки:")
+print(numeric_columns)
+
+print("\nКатегориальные признаки:")
+print(categorical_columns)
+
+
+# 2. Фильтрация данных
+adults = df[df["Age"] >= 18]
+women = df[df["Sex"] == "female"]
+first_class = df[df["Pclass"] == 1]
+adult_women_first_class = df[
+    (df["Age"] >= 18) &
+    (df["Sex"] == "female") &
+    (df["Pclass"] == 1)
+]
+
+print("\nКоличество записей после фильтрации:")
+print("Всего пассажиров:", len(df))
+print("Пассажиры старше или равные 18 лет:", len(adults))
+print("Женщины:", len(women))
+print("Пассажиры 1 класса:", len(first_class))
+print("Женщины от 18 лет в 1 классе:", len(adult_women_first_class))
+
+
+# 3. Расчеты через NumPy и Pandas
+mean_age_np = np.mean(df["Age"].dropna())
+max_fare_np = np.max(df["Fare"])
+min_fare_np = np.min(df["Fare"])
+
+mean_age_pd = df["Age"].mean()
+max_fare_pd = df["Fare"].max()
+min_fare_pd = df["Fare"].min()
+
+print("\nРасчеты NumPy:")
+print("Средний возраст:", mean_age_np)
+print("Максимальная стоимость билета:", max_fare_np)
+print("Минимальная стоимость билета:", min_fare_np)
+
+print("\nРасчеты Pandas:")
+print("Средний возраст:", mean_age_pd)
+print("Максимальная стоимость билета:", max_fare_pd)
+print("Минимальная стоимость билета:", min_fare_pd)
+
+
+# 4. Группировка по полу и классу обслуживания
+grouped = df.groupby(["Sex", "Pclass"]).agg(
+    survival_rate=("Survived", "mean"),
+    mean_fare=("Fare", "mean"),
+    mean_age=("Age", "mean"),
+    passengers=("PassengerId", "count")
+).reset_index()
+
+print("\nГруппировка по полу и классу обслуживания:")
+print(grouped)
+
+
+# 5. Пропущенные значения и их обработка
+missing_values = df.isna().sum()
+
+print("\nПропущенные значения до обработки:")
+print(missing_values)
+
+df_clean = df.copy()
+
+df_clean["Age"] = df_clean["Age"].fillna(df_clean["Age"].median())
+
+if "Embarked" in df_clean.columns:
+    df_clean["Embarked"] = df_clean["Embarked"].fillna(df_clean["Embarked"].mode()[0])
+
+if "Cabin" in df_clean.columns:
+    df_clean["Cabin"] = df_clean["Cabin"].fillna("Unknown")
+
+print("\nПропущенные значения после обработки:")
+print(df_clean.isna().sum())
+
+
+# 6.1. Гистограмма распределения возраста
+plt.figure(figsize=(8, 5))
+df_clean["Age"].plot(kind="hist", bins=20)
+plt.title("Распределение возраста пассажиров")
+plt.xlabel("Возраст")
+plt.ylabel("Количество пассажиров")
+plt.grid(True)
+plt.savefig("age_distribution.png", dpi=300, bbox_inches="tight")
+plt.show()
+
+
+# 6.2. Доля выживших по полу
+survival_by_sex = df_clean.groupby("Sex")["Survived"].mean()
+
+plt.figure(figsize=(7, 5))
+survival_by_sex.plot(kind="bar")
+plt.title("Доля выживших пассажиров по полу")
+plt.xlabel("Пол")
+plt.ylabel("Доля выживших")
+plt.ylim(0, 1)
+plt.grid(axis="y")
+plt.savefig("survival_by_sex.png", dpi=300, bbox_inches="tight")
+plt.show()
+
+print("\nДоля выживших по полу:")
+print(survival_by_sex)
+
+
+# 6.3. Доля выживших по классу обслуживания
+survival_by_class = df_clean.groupby("Pclass")["Survived"].mean()
+
+plt.figure(figsize=(7, 5))
+survival_by_class.plot(kind="bar")
+plt.title("Доля выживших пассажиров по классу обслуживания")
+plt.xlabel("Класс обслуживания")
+plt.ylabel("Доля выживших")
+plt.ylim(0, 1)
+plt.grid(axis="y")
+plt.savefig("survival_by_class.png", dpi=300, bbox_inches="tight")
+plt.show()
+
+print("\nДоля выживших по классу обслуживания:")
+print(survival_by_class)
+
+
+# Сохранение обработанной таблицы
+df_clean.to_csv("titanic_clean.csv", index=False)
+grouped.to_csv("grouped_titanic_analysis.csv", index=False)
+
+print("\nФайлы сохранены:")
+print("age_distribution.png")
+print("survival_by_sex.png")
+print("survival_by_class.png")
+print("titanic_clean.csv")
+print("grouped_titanic_analysis.csv")
