@@ -1,0 +1,197 @@
+import numpy as np
+import time
+
+
+def print_block(title):
+    print("\n" + "=" * 70)
+    print(title)
+    print("=" * 70)
+
+
+def std_py(values):
+    mean_value = sum(values) / len(values)
+    variance = sum((x - mean_value) ** 2 for x in values) / len(values)
+    return variance ** 0.5
+
+
+# Исходные данные
+a = np.array([4, 8, 15, 16, 23, 42], dtype=np.int64)
+b = np.array([
+    [3, 7, 11],
+    [13, 17, 19],
+    [23, 29, 31]
+], dtype=np.int64)
+
+a2 = np.array([1, 2, 3, 4, 5, 6], dtype=np.int64)
+c = np.array([10, 20, 30], dtype=np.int64)
+
+list_a = a.tolist()
+list_b = b.tolist()
+list_a2 = a2.tolist()
+list_c = c.tolist()
+flat_b = [item for row in list_b for item in row]
+
+
+# 1. Создание массивов, свойства, индексация и срезы
+print_block("Задание 1. Свойства массивов, индексация и срезы")
+
+print("Одномерный массив a:", a)
+print("Размерность a:", a.ndim)
+print("Форма a:", a.shape)
+print("Тип данных a:", a.dtype)
+print("Количество элементов a:", a.size)
+
+print("\nДвумерный массив b:")
+print(b)
+print("Размерность b:", b.ndim)
+print("Форма b:", b.shape)
+print("Тип данных b:", b.dtype)
+print("Количество элементов b:", b.size)
+
+print("\nИндексация и срезы:")
+print("a[2] =", a[2])
+print("a[1:4] =", a[1:4])
+print("b[1, 2] =", b[1, 2])
+print("b[:2, 1:] =")
+print(b[:2, 1:])
+
+
+# 2. Агрегатные функции и поэлементные операции
+print_block("Задание 2. Агрегатные функции и поэлементные операции")
+
+print("NumPy для a:")
+print("Сумма:", np.sum(a))
+print("Среднее:", np.mean(a))
+print("Минимум:", np.min(a))
+print("Максимум:", np.max(a))
+print("Стандартное отклонение:", np.std(a))
+
+print("\nNumPy для b:")
+print("Сумма:", np.sum(b))
+print("Среднее:", np.mean(b))
+print("Минимум:", np.min(b))
+print("Максимум:", np.max(b))
+print("Стандартное отклонение:", np.std(b))
+
+print("\nПоэлементные операции NumPy:")
+print("a + 10 =", a + 10)
+print("a + a2 =", a + a2)
+print("b * 2 =")
+print(b * 2)
+
+print("\nСтандартные средства Python:")
+print("Сумма a:", sum(list_a))
+print("Среднее a:", sum(list_a) / len(list_a))
+print("Минимум a:", min(list_a))
+print("Максимум a:", max(list_a))
+print("Стандартное отклонение a:", std_py(list_a))
+print("a + 10:", [x + 10 for x in list_a])
+print("a + a2:", [list_a[i] + list_a2[i] for i in range(len(list_a))])
+print("b * 2:", [[x * 2 for x in row] for row in list_b])
+
+
+# 3. Агрегатные операции по строкам и столбцам
+print_block("Задание 3. Операции по строкам и столбцам")
+
+print("NumPy:")
+print("Сумма по столбцам, axis=0:", np.sum(b, axis=0))
+print("Сумма по строкам, axis=1:", np.sum(b, axis=1))
+print("Среднее по столбцам, axis=0:", np.mean(b, axis=0))
+print("Среднее по строкам, axis=1:", np.mean(b, axis=1))
+
+print("\nСтандартные средства Python:")
+row_sums = [sum(row) for row in list_b]
+col_sums = [sum(row[j] for row in list_b) for j in range(len(list_b[0]))]
+row_means = [sum(row) / len(row) for row in list_b]
+col_means = [sum(row[j] for row in list_b) / len(list_b) for j in range(len(list_b[0]))]
+
+print("Сумма по строкам:", row_sums)
+print("Сумма по столбцам:", col_sums)
+print("Среднее по строкам:", row_means)
+print("Среднее по столбцам:", col_means)
+
+
+# 4. Broadcasting
+print_block("Задание 4. Broadcasting")
+
+print("Массив b:")
+print(b)
+print("Вектор c:", c)
+
+print("\nBroadcasting NumPy:")
+print("b + c =")
+print(b + c)
+print("b + 100 =")
+print(b + 100)
+
+print("\nАналог без NumPy:")
+manual_b_plus_c = [
+    [list_b[i][j] + list_c[j] for j in range(len(list_c))]
+    for i in range(len(list_b))
+]
+manual_b_plus_100 = [[x + 100 for x in row] for row in list_b]
+
+print("b + c:", manual_b_plus_c)
+print("b + 100:", manual_b_plus_100)
+
+
+# 5. Логические маски и фильтрация
+print_block("Задание 5. Логические маски и фильтрация")
+
+mask = a > 15
+print("Маска a > 15:", mask)
+print("Элементы a > 15:", a[mask])
+
+mask_b = b % 2 == 1
+print("\nМаска для нечетных элементов b:")
+print(mask_b)
+print("Нечетные элементы b:", b[mask_b])
+
+print("\nАналог без NumPy:")
+filtered_a = [x for x in list_a if x > 15]
+filtered_b = [x for row in list_b for x in row if x % 2 == 1]
+print("Элементы a > 15:", filtered_a)
+print("Нечетные элементы b:", filtered_b)
+
+
+# 6. Сортировка и индекс максимального элемента
+print_block("Задание 6. Сортировка и индекс максимального элемента")
+
+print("NumPy:")
+print("Сортировка a по возрастанию:", np.sort(a))
+print("Сортировка a по убыванию:", np.sort(a)[::-1])
+print("Индекс максимального элемента a:", np.argmax(a))
+
+print("\nСтандартные средства Python:")
+print("Сортировка a по возрастанию:", sorted(list_a))
+print("Сортировка a по убыванию:", sorted(list_a, reverse=True))
+print("Индекс максимального элемента a:", list_a.index(max(list_a)))
+
+
+# 7. Изменение типа данных, память и время выполнения
+print_block("Задание 7. Тип данных, память и производительность")
+
+float64_arr = np.array([1.25, 2.50, 3.75, 4.00], dtype=np.float64)
+float32_arr = float64_arr.astype(np.float32)
+int32_arr = float64_arr.astype(np.int32)
+
+print("float64:", float64_arr, "sum =", float64_arr.sum(), "nbytes =", float64_arr.nbytes)
+print("float32:", float32_arr, "sum =", float32_arr.sum(), "nbytes =", float32_arr.nbytes)
+print("int32:", int32_arr, "sum =", int32_arr.sum(), "nbytes =", int32_arr.nbytes)
+
+N = 1_000_000
+large_np = np.arange(N, dtype=np.int64)
+large_list = list(range(N))
+
+start_np = time.perf_counter()
+sum_np = large_np.sum()
+end_np = time.perf_counter()
+
+start_py = time.perf_counter()
+sum_py = sum(large_list)
+end_py = time.perf_counter()
+
+print("\nСравнение скорости суммирования:")
+print("NumPy sum:", sum_np, "time =", round(end_np - start_np, 6), "сек.")
+print("Python sum:", sum_py, "time =", round(end_py - start_py, 6), "сек.")
+print("Результаты суммирования совпадают:", sum_np == sum_py)
