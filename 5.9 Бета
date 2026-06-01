@@ -1,0 +1,201 @@
+import numpy as np  # Импорт библиотеки NumPy для работы с массивами
+import time  # Импорт модуля time для измерения времени выполнения
+
+
+def print_block(title):
+    # Функция для вывода разделителя с заголовком
+    print("\n" + "=" * 70)
+    print(title)
+    print("=" * 70)
+
+
+def std_py(values):
+    # Функция для вычисления стандартного отклонения стандартными средствами Python
+    mean_value = sum(values) / len(values)  # Среднее арифметическое
+    variance = sum((x - mean_value) ** 2 for x in values) / len(values)  # Дисперсия
+    return variance ** 0.5  # Корень из дисперсии = стандартное отклонение
+
+
+# ==================== Исходные данные ====================
+# Создание массивов NumPy
+a = np.array([4, 8, 15, 16, 23, 42], dtype=np.int64)  # Одномерный массив int64
+b = np.array([
+    [3, 7, 11],
+    [13, 17, 19],
+    [23, 29, 31]
+], dtype=np.int64)  # Двумерный массив 3x3
+
+a2 = np.array([1, 2, 3, 4, 5, 6], dtype=np.int64)  # Ещё один одномерный для операций
+c = np.array([10, 20, 30], dtype=np.int64)  # Вектор для broadcasting
+
+# Преобразование в списки Python
+list_a = a.tolist()  # NumPy -> list
+list_b = b.tolist()  # NumPy -> list
+list_a2 = a2.tolist()  # NumPy -> list
+list_c = c.tolist()  # NumPy -> list
+flat_b = [item for row in list_b for item in row]  # Разворачивание списка списков в плоский
+
+
+# 1. Создание массивов, свойства, индексация и срезы
+print_block("Задание 1. Свойства массивов, индексация и срезы")
+
+print("Одномерный массив a:", a)
+print("Размерность a:", a.ndim)  # Количество измерений
+print("Форма a:", a.shape)  # Кортеж размеров по каждой оси
+print("Тип данных a:", a.dtype)  # Тип элементов
+print("Количество элементов a:", a.size)  # Общее число элементов
+
+print("\nДвумерный массив b:")
+print(b)
+print("Размерность b:", b.ndim)  # 2
+print("Форма b:", b.shape)  # (3, 3)
+print("Тип данных b:", b.dtype)  # int64
+print("Количество элементов b:", b.size)  # 9
+
+print("\nИндексация и срезы:")
+print("a[2] =", a[2])  # Доступ по индексу (третий элемент)
+print("a[1:4] =", a[1:4])  # Срез со 2-го по 4-й элемент (индексы 1,2,3)
+print("b[1, 2] =", b[1, 2])  # Доступ к элементу строка 1, столбец 2 (19)
+print("b[:2, 1:] =")
+print(b[:2, 1:])  # Срез: первые две строки, столбцы начиная со второго
+
+
+# 2. Агрегатные функции и поэлементные операции
+print_block("Задание 2. Агрегатные функции и поэлементные операции")
+
+print("NumPy для a:")
+print("Сумма:", np.sum(a))  # Сумма всех элементов
+print("Среднее:", np.mean(a))  # Среднее арифметическое
+print("Минимум:", np.min(a))  # Минимальный элемент
+print("Максимум:", np.max(a))  # Максимальный элемент
+print("Стандартное отклонение:", np.std(a))  # Стандартное отклонение
+
+print("\nNumPy для b:")
+print("Сумма:", np.sum(b))  # Сумма всех элементов
+print("Среднее:", np.mean(b))  # Среднее всех
+print("Минимум:", np.min(b))  # Минимум среди всех
+print("Максимум:", np.max(b))  # Максимум среди всех
+print("Стандартное отклонение:", np.std(b))  # Стандартное отклонение всех
+
+print("\nПоэлементные операции NumPy:")
+print("a + 10 =", a + 10)  # Прибавление скаляра к каждому элементу
+print("a + a2 =", a + a2)  # Поэлементное сложение массивов одинаковой длины
+print("b * 2 =")
+print(b * 2)  # Умножение каждого элемента на скаляр
+
+print("\nСтандартные средства Python:")
+print("Сумма a:", sum(list_a))  # Встроенная сумма
+print("Среднее a:", sum(list_a) / len(list_a))  # Среднее через сумму и длину
+print("Минимум a:", min(list_a))  # Встроенный минимум
+print("Максимум a:", max(list_a))  # Встроенный максимум
+print("Стандартное отклонение a:", std_py(list_a))  # Самодельная функция
+print("a + 10:", [x + 10 for x in list_a])  # Генератор списка для прибавления скаляра
+print("a + a2:", [list_a[i] + list_a2[i] for i in range(len(list_a))])  # Поэлементное сложение через индексы
+print("b * 2:", [[x * 2 for x in row] for row in list_b])  # Умножение каждого элемента в списке списков
+
+
+# 3. Агрегатные операции по строкам и столбцам
+print_block("Задание 3. Операции по строкам и столбцам")
+
+print("NumPy:")
+print("Сумма по столбцам, axis=0:", np.sum(b, axis=0))  # Суммирование по вертикали (столбцы)
+print("Сумма по строкам, axis=1:", np.sum(b, axis=1))  # Суммирование по горизонтали (строки)
+print("Среднее по столбцам, axis=0:", np.mean(b, axis=0))  # Среднее по столбцам
+print("Среднее по строкам, axis=1:", np.mean(b, axis=1))  # Среднее по строкам
+
+print("\nСтандартные средства Python:")
+row_sums = [sum(row) for row in list_b]  # Сумма по каждой строке
+col_sums = [sum(row[j] for row in list_b) for j in range(len(list_b[0]))]  # Сумма по каждому столбцу
+row_means = [sum(row) / len(row) for row in list_b]  # Среднее по строкам
+col_means = [sum(row[j] for row in list_b) / len(list_b) for j in range(len(list_b[0]))]  # Среднее по столбцам
+
+print("Сумма по строкам:", row_sums)
+print("Сумма по столбцам:", col_sums)
+print("Среднее по строкам:", row_means)
+print("Среднее по столбцам:", col_means)
+
+
+# 4. Broadcasting
+print_block("Задание 4. Broadcasting")
+
+print("Массив b:")
+print(b)
+print("Вектор c:", c)
+
+print("\nBroadcasting NumPy:")
+print("b + c =")
+print(b + c)  # Применение broadcasting — c (3,) расширяется до (3,3) и складывается с b
+print("b + 100 =")
+print(b + 100)  # Скаляр 100 расширяется до формы b
+
+print("\nАналог без NumPy:")
+manual_b_plus_c = [
+    [list_b[i][j] + list_c[j] for j in range(len(list_c))]
+    for i in range(len(list_b))
+]  # Ручное добавление вектора к каждой строке матрицы
+manual_b_plus_100 = [[x + 100 for x in row] for row in list_b]  # Ручное добавление скаляра
+
+print("b + c:", manual_b_plus_c)
+print("b + 100:", manual_b_plus_100)
+
+
+# 5. Логические маски и фильтрация
+print_block("Задание 5. Логические маски и фильтрация")
+
+mask = a > 15  # Создание логической маски (условие поэлементно)
+print("Маска a > 15:", mask)
+print("Элементы a > 15:", a[mask])  # Применение маски: остаются только True
+
+mask_b = b % 2 == 1  # Маска для нечётных элементов (остаток от деления == 1)
+print("\nМаска для нечетных элементов b:")
+print(mask_b)
+print("Нечетные элементы b:", b[mask_b])  # Выбор нечётных
+
+print("\nАналог без NumPy:")
+filtered_a = [x for x in list_a if x > 15]  # Фильтрация через генератор списка
+filtered_b = [x for row in list_b for x in row if x % 2 == 1]  # Плоский список нечётных
+print("Элементы a > 15:", filtered_a)
+print("Нечетные элементы b:", filtered_b)
+
+
+# 6. Сортировка и индекс максимального элемента
+print_block("Задание 6. Сортировка и индекс максимального элемента")
+
+print("NumPy:")
+print("Сортировка a по возрастанию:", np.sort(a))  # Возвращает отсортированную копию
+print("Сортировка a по убыванию:", np.sort(a)[::-1])  # Сортировка + реверс
+print("Индекс максимального элемента a:", np.argmax(a))  # Позиция первого максимума
+
+print("\nСтандартные средства Python:")
+print("Сортировка a по возрастанию:", sorted(list_a))  # Встроенная сортировка
+print("Сортировка a по убыванию:", sorted(list_a, reverse=True))  # Сортировка с убыванием
+print("Индекс максимального элемента a:", list_a.index(max(list_a)))  # Поиск индекса по значению
+
+
+# 7. Изменение типа данных, память и время выполнения
+print_block("Задание 7. Тип данных, память и производительность")
+
+float64_arr = np.array([1.25, 2.50, 3.75, 4.00], dtype=np.float64)  # Массив float64
+float32_arr = float64_arr.astype(np.float32)  # Явное приведение к float32
+int32_arr = float64_arr.astype(np.int32)  # Приведение к int32 (дробная часть отбрасывается)
+
+print("float64:", float64_arr, "sum =", float64_arr.sum(), "nbytes =", float64_arr.nbytes)  # .nbytes — байт памяти
+print("float32:", float32_arr, "sum =", float32_arr.sum(), "nbytes =", float32_arr.nbytes)
+print("int32:", int32_arr, "sum =", int32_arr.sum(), "nbytes =", int32_arr.nbytes)
+
+N = 1_000_000
+large_np = np.arange(N, dtype=np.int64)  # Массив чисел от 0 до N-1
+large_list = list(range(N))  # Обычный список Python
+
+start_np = time.perf_counter()  # Начало замера (NumPy)
+sum_np = large_np.sum()  # Суммирование методом NumPy
+end_np = time.perf_counter()  # Конец замера
+
+start_py = time.perf_counter()  # Начало замера (Python)
+sum_py = sum(large_list)  # Суммирование встроенной функцией sum
+end_py = time.perf_counter()  # Конец замера
+
+print("\nСравнение скорости суммирования:")
+print("NumPy sum:", sum_np, "time =", round(end_np - start_np, 6), "сек.")
+print("Python sum:", sum_py, "time =", round(end_py - start_py, 6), "сек.")
+print("Результаты суммирования совпадают:", sum_np == sum_py)
